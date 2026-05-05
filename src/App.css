@@ -1,0 +1,544 @@
+body {
+  background-color: #282c34;
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.App {
+  text-align: center;
+  padding: 10px;
+  width: 95%;
+  max-width: 800px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 0.5em;
+}
+
+.game-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.player-area {
+  margin: 10px;
+  width: 100%;
+}
+
+.hand {
+  display: flex;
+  justify-content: center; /* center the row */
+  align-items: center; /* vertically center cards within the hand row */
+  gap: 12px; /* consistent horizontal spacing between cards */
+  flex-wrap: nowrap; /* keep cards on a single row */
+  /* overflow-x: auto;  allow horizontal scroll if viewport is narrow */
+  /* -webkit-overflow-scrolling: touch; */
+  margin-bottom: 8px;
+  padding: 8px 0;
+  min-height: 130px; /* Ensure space even when hand is empty */
+}
+
+/* Hand-scoped card sizing: keep fixed width for horizontal alignment and prevent flex shrinking */
+.hand .card {
+  margin: 0;
+  flex: 0 0 auto; /* don't grow or shrink */
+  width: 120px; /* fixed visual width inside the hand */
+  max-width: 120px;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 140px;          /* Desktop cap */
+  aspect-ratio: 5 / 7;       /* Standard playing card ratio (2.5 x 3.5 inches) */
+  background: #ffffff;       /* Plain white face */
+  border: 1px solid #ddd;    /* Subtle border */
+  border-radius: 12px;       /* Rounded corners for card-like appearance */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  user-select: none;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  color: #333;
+}
+
+.card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.card:active {
+  transform: scale(0.98);
+}
+
+/* Ensure direct corner elements and interactive content sit above the face */
+.card > .corner-rank,
+.card > .corner-suit,
+.card > .corner-rank.br,
+.card > .corner-suit.br {
+  z-index: 3;
+}
+
+/* Captured pile small card override */
+.captured-pile .pile-stack { display: block; }
+.captured-pile .pile-card {
+  width: 68px;
+  height: 104px;
+  padding: 2px;
+  margin: 0;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  font-size: 14px;
+}
+
+.captured-pile .pile-card .rank { font-size: 1em; top: 4px; left: 4px; }
+.captured-pile .pile-card .suit { font-size: 1.2em; bottom: 4px; right: 4px; }
+
+.pile-count { font-size: 0.9em; margin-bottom: 4px; color: #ddd; }
+
+/* Display captured pile as a horizontal row to match hand layout */
+.captured-pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* dotted separator to differentiate from hand */
+  border-left: 2px dotted rgba(255,255,255,0.12);
+  padding-left: 10px;
+  margin-left: 8px;
+}
+
+.captured-pile .pile-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.captured-pile .pile-card:hover {
+  transform: scale(1.03);
+}
+
+/* Badge showing pile count on top-left of pile area */
+.captured-pile .pile-badge {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 0.75em;
+  pointer-events: none; /* badge shouldn't absorb clicks */
+}
+
+.captured-pile .pile-label { display: none; } /* hide textual label by default, badge suffices */
+
+/* Remove duplicate hover - already defined in .card section above */
+
+/* Corner rank/suit positioning for card-like appearance */
+.corner-rank {
+  position: absolute;
+  top: 8%;
+  left: 9%;
+  font-weight: 800;
+  font-size: clamp(14px, 3.5vw, 22px);
+  line-height: 1;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.corner-suit {
+  position: absolute;
+  top: 24%;
+  left: 9%;
+  font-size: clamp(12px, 3vw, 18px);
+  line-height: 1;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Bottom-right mirrored corner */
+.corner-rank.br {
+  position: absolute;
+  bottom: 8%;
+  right: 9%;
+  font-size: clamp(14px, 3.5vw, 22px);
+  line-height: 1;
+  font-weight: 800;
+  transform: rotate(180deg);
+  transform-origin: center center;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.corner-suit.br {
+  position: absolute;
+  bottom: 24%;
+  right: 9%;
+  font-size: clamp(12px, 3vw, 18px);
+  line-height: 1;
+  transform: rotate(180deg);
+  transform-origin: center center;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.heart {
+  color: red;
+}
+
+.diamond {
+  color: red;
+}
+
+.club {
+  color: black;
+}
+
+.spade {
+  color: black;
+}
+
+/* Basic Build Styling */
+.build {
+  width: 100%;
+  max-width: 140px;
+  aspect-ratio: 5 / 7;
+  border: 2px dashed #888; /* Dashed border */
+  border-radius: 8px;
+  background-color: #eee; /* Light gray background */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  margin: 5px; /* Consistent margin */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content */
+  align-items: center; /* Center content */
+  padding: 5px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  text-align: center;
+  color: #333;
+}
+
+.build:hover {
+  transform: scale(1.05);
+}
+
+.build-value {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+
+.build-cards {
+  font-size: 0.8em;
+  color: #555;
+}
+
+.simple-build {
+    border-style: dashed;
+}
+
+.compound-build {
+    border-style: double; /* Differentiate compound builds */
+    border-width: 3px;
+}
+
+/* Basic Pair Styling - Similar to Build */
+.pair {
+  width: 100%;
+  max-width: 140px;
+  aspect-ratio: 5 / 7;
+  border: 2px solid #4682B4; /* Steel blue border */
+  border-radius: 8px;
+  background-color: #f0f8ff; /* Alice blue background */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  margin: 5px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content */
+  align-items: center; /* Center content */
+  padding: 5px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  text-align: center;
+  color: #333;
+}
+
+.pair:hover {
+  transform: scale(1.05);
+}
+
+.pair-rank {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+
+.pair-cards {
+  font-size: 0.8em;
+  color: #555;
+}
+
+.table-area {
+  background-color: #4CAF50; /* Green table */
+  padding: 15px; /* Increased padding */
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  margin-bottom: 10px;
+  min-height: 160px; /* Ensure table area has some height */
+}
+
+.table-header {
+  font-size: 0.9em; /* Smaller font size */
+  margin: 0; /* Remove default margins */
+  padding: 0; /* Remove default padding */
+  font-weight: normal; /* Make it normal weight */
+}
+
+.table-items { /* Renamed from .table-cards */
+  display: flex;
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically so cards align with hand */
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  gap: 12px; /* Space between table items */
+  margin-bottom: 10px;
+  min-height: 130px; /* Ensure space for at least one row of cards */
+}
+
+/* Add some space between items */
+.card + .card, .build + .build, .pair + .pair, .card + .build, .build + .card, .card + .pair, .pair + .card, .build + .pair, .pair + .build {
+  margin: 0; /* Use margin on all sides now */
+}
+
+/* Make table cards align like hand cards */
+.table-card, .hand-card, .pile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Remove duplicate corner definitions - consolidated above */
+.corner-rank.br,
+.corner-suit.br {
+  top: auto;
+  left: auto;
+  transform: rotate(180deg);
+  transform-origin: center center;
+}
+.corner-rank.br {
+  bottom: 8%;
+  right: 9%;
+}
+.corner-suit.br {
+  bottom: 24%;
+  right: 9%;
+}
+
+/* Reduce the per-card box shadow for table cards to match the hand visual */
+.table-card {
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.25);
+}
+
+/* Selected card styling */
+.card.hand-card.selected {
+  border: 3px solid blue;
+  transform: translateY(-4px) scale(1.05);
+}
+
+.card.selected-table-card, .build.selected-table-card, .pair.selected-table-card {
+  border: 3px solid darkorange;
+  transform: translateY(-4px) scale(1.05);
+}
+
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 5px; /* Add margin to buttons */
+  font-size: 0.9em;
+}
+
+button:hover:not(:disabled) { /* Only apply hover effect if not disabled */
+  background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #555; /* Darker background for disabled */
+    cursor: not-allowed;
+}
+
+
+.actions {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column; /* Stack score and turn */
+  align-items: center;
+  justify-content: center;
+  padding: 5px; /* Add some padding */
+}
+
+/* Layout for hand and captured pile side-by-side */
+.hand-pile-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.captured-container { display: flex; align-items: center; }
+
+.player-info .score {
+  margin-bottom: 5px; /* Add space between score and turn */
+  font-size: 1.1em;
+}
+
+.player-info > div {
+  text-align: center; /* Center the turn information */
+}
+
+.current-player {
+  background-color: rgba(255, 255, 255, 0.1); /* Slightly more visible highlight */
+  border-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important; /* Ensure cursor changes */
+  /* pointer-events: none; */ /* Optionally disable all pointer events */
+}
+
+/* Media Queries for Mobile Optimization */
+@media (max-width: 600px) {
+  .App {
+    width: 100%; /* Take full width on small screens */
+    padding: 3px; /* Reduce padding further */
+  }
+
+  h1 {
+    font-size: 1.6em; /* Slightly smaller heading */
+    margin-bottom: 0.3em; /* Reduce margin */
+  }
+
+  .card {
+    max-width: 80px;
+    font-size: 12px;
+    padding: 4px;
+  }
+
+  .build, .pair {
+    width: 65px;
+    height: 95px;
+    margin: 2px;
+    padding: 2px;
+  }
+
+  .table-area {
+    padding: 5px;
+    min-height: 80px;
+  }
+
+  .table-items {
+    min-height: 80px;
+    margin-bottom: 5px;
+  }
+
+  button {
+    padding: 4px 8px;
+    font-size: 0.7em;
+    margin: 2px;
+  }
+
+  .actions {
+    margin-top: 5px;
+  }
+
+  .player-info .score {
+    font-size: 0.9em;
+    margin-bottom: 3px;
+  }
+
+  .hand {
+    min-height: 100px;
+    margin-bottom: 3px;
+  }
+
+  /* Adjust corner sizes for mobile */
+  .corner-rank {
+    font-size: clamp(10px, 3vw, 16px);
+  }
+  .corner-suit {
+    font-size: clamp(8px, 2.5vw, 14px);
+  }
+}
+
+/* Landscape Orientation */
+@media (max-height: 400px) and (orientation: landscape) {
+    .App {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .game-board {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .player-area {
+        width: 30%;
+        margin: 5px;
+    }
+
+    .table-area {
+        width: 40%;
+        min-height: auto;
+        margin: 5px;
+    }
+
+    .hand {
+        min-height: 80px;
+    }
+
+    button {
+        font-size: 0.7em;
+        padding: 4px 8px;
+    }
+}
+
+/* SUIT COLORS - Apply color to corner rank and suit based on suit class */
+.card.hearts .corner-rank,
+.card.hearts .corner-suit,
+.card.diamonds .corner-rank,
+.card.diamonds .corner-suit {
+  color: #d32f2f; /* Standard casino red */
+}
+
+.card.spades .corner-rank,
+.card.spades .corner-suit,
+.card.clubs .corner-rank,
+.card.clubs .corner-suit {
+  color: #212121; /* Standard casino black */
+}

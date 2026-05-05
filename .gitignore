@@ -1,0 +1,104 @@
+```
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Logs
+*.log
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.swp
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.nox/
+.pytest_cache/
+.mypy_cache/
+
+# Node.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+node_modules/
+dist/
+logs
+*.log
+npm
+.cache
+.nyc_output
+coverage
+.nyc-output
+istanbul.yml
+.jscs.json
+.eslintcache
+.prettierignore
+.stylelintignore
+
+# Build tools
+target/
+.gradle/
+build/
+*.o
+*.obj
+*.out
+*.dll
+*.so
+*.a
+*.class
+
+# Archives
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+
+```
