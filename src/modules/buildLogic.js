@@ -301,9 +301,12 @@ import RulesModule from './RulesModule';
         return { isValid: false, message: "Face cards cannot be used in builds." };
       }
 
-      // Only the build owner can modify their single build
-      if (isModification && targetBuild && targetBuild.controller !== currentPlayer) {
-        return { isValid: false, message: "Only the build owner can modify this Build." };
+      // Only the build owner can modify a solid build; anyone can construct on a non-solid build
+      if (isModification && targetBuild) {
+        const isSolid = RulesModule.isSolidBuild(targetBuild);
+        if (isSolid && targetBuild.controller !== currentPlayer) {
+          return { isValid: false, message: "Only the build owner can modify this solid Build." };
+        }
       }
 
       const n = otherSelectedItems.length;
