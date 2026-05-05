@@ -1,5 +1,6 @@
 // src/modules/buildLogic.js
 import { getValue } from './deck';
+import RulesModule from './RulesModule';
 
     // Helper to get the build value of a card (Ace=1)
     const getBuildValue = (card) => {
@@ -89,6 +90,22 @@ import { getValue } from './deck';
 
 
     export const validateBuild = (playedCard, selectedItems, playerHand, tableItems, currentPlayer) => {
+      // --- Rules Enforcement ---
+      // 1. Cannot build twice in a turn (should be checked in turn handler, not here)
+      // 2. Cannot build on opponent's concrete build
+      if (selectedItems.some(item => item.type === 'build' && RulesModule.cannotBuildOnOpponentsConcreteBuild({ build: item, player: currentPlayer }))) {
+        return { isValid: false, message: "Cannot build on opponent's concrete build." };
+      }
+      // 3. Cannot break up or combine builds
+      if (selectedItems.filter(item => item.type === 'build').length > 1) {
+        if (RulesModule.cannotBreakOrCombineBuilds({ table: tableItems, action: { type: 'combine', items: selectedItems } })) {
+          return { isValid: false, message: "Cannot combine or break up builds." };
+        }
+      }
+      // 4. No two builds of same capture value
+      if (RulesModule.cannotHaveDuplicateBuildValues({ table: tableItems })) {
+        return { isValid: false, message: "Cannot have two builds of the same value on the table." };
+      }
       // --- Initial Checks ---
       if (!playedCard || !selectedItems || selectedItems.length === 0) {
         return { isValid: false, message: "Select a card from hand and items from table." };

@@ -4,6 +4,7 @@ import { validatePair } from './pairLogic';
 import { getValue, captureValues, combinationValue } from './deck';
 import { CaptureValidator, areItemSetsEqual } from './captureLogic';
 import { asSelectableItems, popTopFromOwner, pushCapturedToPlayer } from './capturePile';
+import RulesModule from './RulesModule';
 
 // Simple ID generator
 let nextBuildId = 0;
@@ -17,6 +18,13 @@ const CAPTURE_DEBUG = true;
  * Handles the build action, using the validated summing/cascading groups.
  */
 export const handleBuild = (playedCard, selectedItems, currentPlayer, tableItems, playerHand, player1Pile, player2Pile) => {
+    // --- Rules Enforcement ---
+    // 1. Cannot build twice in a turn (example: check turnActions if available)
+    // 2. Cannot trail while building (should be checked in turn handler)
+    // 3. Cannot abandon own build (should be checked in turn handler)
+    // 4. Cannot end turn with multiple builds (should be checked in turn handler)
+    // 5. Cannot trail if own build (should be checked in turn handler)
+    // (Most build-specific rules are enforced in validateBuild)
         // When validating builds, include pile-top virtual items so builds can use opponent pile tops
         const augmentedTableForValidation = [...tableItems, ...asSelectableItems(player1Pile, player2Pile, currentPlayer)];
         const validation = validateBuild(playedCard, selectedItems, playerHand, augmentedTableForValidation, currentPlayer);
