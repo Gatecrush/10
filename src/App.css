@@ -12,8 +12,8 @@ body {
 .App {
   text-align: center;
   padding: 10px;
-  width: 95%;
-  max-width: 800px;
+  width: 100%;
+  max-width: 900px;
 }
 
 h1 {
@@ -481,9 +481,11 @@ button:disabled {
 
 /* Media Queries for Mobile Optimization */
 @media (max-width: 600px) {
+  body { align-items: flex-start; }
   .App {
     width: 100%; /* Take full width on small screens */
-    padding: 3px; /* Reduce padding further */
+    padding: 6px; /* Slight padding */
+    max-width: 100%;
   }
 
   h1 {
@@ -507,18 +509,37 @@ button:disabled {
   .table-area {
     padding: 5px;
     min-height: 80px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    /* Allow horizontal scrolling on narrow viewports so the table can show 6-card 'pages' */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scroll-snap-type: x mandatory;
+    /* Constrain visible viewport to ~6 cards; extra content forms columns and is scrollable */
+    max-width: calc((var(--card-min) + 6px) * 6 - 6px);
   }
-
   .table-items {
     min-height: 80px;
     margin-bottom: 5px;
+    --card-min: 72px; /* smaller base for phones */
+    /* Let the inner items form a wide block that wraps into rows of up to 6.
+       The outer .table-area constrains the visible viewport to 6 cards and allows horizontal scrolling. */
+    display: flex;
+    flex-wrap: wrap; /* allow cascading to subsequent rows (6 per row) */
+    width: max-content; /* ensure the content can be wider than viewport and scroll */
+    gap: 6px;
+    scroll-snap-type: x proximity;
   }
 
-  /* 2 columns on small devices */
-  .table-items {
-    grid-template-columns: repeat(2, minmax(65px, 1fr));
-    gap: 8px;
+  /* Each table item should align to a snap point when scrolling horizontally */
+  .table-items > * {
+    scroll-snap-align: start;
   }
+
+  /* Add left/right padding so the viewport looks nicer when clipped to 6 cards */
+  .table-area { padding-left: 8px; padding-right: 8px; }
 
 
 /* For centered flex layout, constrain max-width to enforce 3 items per row on tablets */
@@ -593,6 +614,27 @@ button:disabled {
   .corner-suit {
     font-size: clamp(8px, 2.5vw, 14px);
   }
+}
+
+/* Disable heavy animations on touch devices for performance and UX */
+@media (hover: none) and (pointer: coarse) {
+  .table-items > * {
+    transition: none;
+    animation: none;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .table-items > *:hover { transform: none; }
+}
+
+/* Single-column stacked layout for very narrow screens (<360px) */
+@media (max-width: 360px) {
+  .table-items {
+    max-width: calc((var(--card-min) + 6px) * 1 - 6px);
+    --card-min: 68px;
+    gap: 6px;
+  }
+  .card { max-width: 68px; }
 }
 
 /* Tablet breakpoint: reduce to 3 columns */
