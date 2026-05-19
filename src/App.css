@@ -308,14 +308,58 @@ h1 {
   font-weight: normal; /* Make it normal weight */
 }
 
-.table-items { /* Renamed from .table-cards */
+.table-items { /* Centered, wrapping row layout that cascades from center */
+  --card-min: 120px; /* base minimum card width used to calculate max rows */
   display: flex;
-  justify-content: center; /* Center items horizontally */
-  align-items: center; /* Center items vertically so cards align with hand */
-  flex-wrap: wrap; /* Allow items to wrap to the next line */
-  gap: 12px; /* Space between table items */
-  margin-bottom: 10px;
-  min-height: 130px; /* Ensure space for at least one row of cards */
+  flex-wrap: wrap;
+  justify-content: center; /* center each row */
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 auto 10px auto;
+  min-height: 130px;
+  width: 100%;
+  /* Constrain the row width so there are at most 5 items per row; center aligns items */
+  max-width: calc((var(--card-min) + 12px) * 5 - 12px);
+}
+
+/* Subtle transition for child items so when the grid reflows it feels smoother */
+.table-items {
+  /* ensure items are individually centered within their grid cells */
+  justify-items: center;
+}
+
+.table-items > * {
+  transition: transform 220ms cubic-bezier(.2,.8,.2,1), opacity 180ms ease;
+  will-change: transform, opacity;
+  justify-self: center;
+  align-self: start;
+  opacity: 0;
+  transform: translateY(6px) scale(0.995);
+}
+
+/* Fade-in with slight upward motion; staggered using nth-child patterns */
+@keyframes tableItemIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.995); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.table-items > *:not(.no-animate) {
+  animation-name: tableItemIn;
+  animation-duration: 260ms;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(.2,.8,.2,1);
+}
+
+/* Stagger delay pattern for up to 5 columns; repeats per row */
+.table-items > *:nth-child(5n+1) { animation-delay:   0ms; }
+.table-items > *:nth-child(5n+2) { animation-delay:  40ms; }
+.table-items > *:nth-child(5n+3) { animation-delay:  80ms; }
+.table-items > *:nth-child(5n+4) { animation-delay: 120ms; }
+.table-items > *:nth-child(5n+5) { animation-delay: 160ms; }
+
+/* Hover/interaction polish */
+.table-items > *:hover {
+  transform: translateY(-6px) scale(1.04);
+  z-index: 2;
 }
 
 /* Add some space between items */
@@ -466,6 +510,26 @@ button:disabled {
     margin-bottom: 5px;
   }
 
+  /* 2 columns on small devices */
+  .table-items {
+    grid-template-columns: repeat(2, minmax(65px, 1fr));
+    gap: 8px;
+  }
+
+
+/* For centered flex layout, constrain max-width to enforce 3 items per row on tablets */
+@media (max-width: 1000px) {
+  .table-items {
+    max-width: calc((var(--card-min) + 10px) * 3 - 10px);
+  }
+}
+
+/* On small screens, enforce 2 items per row */
+@media (max-width: 600px) {
+  .table-items {
+    max-width: calc((var(--card-min) + 8px) * 2 - 8px);
+  }
+}
   button {
     padding: 4px 8px;
     font-size: 0.7em;
@@ -492,6 +556,21 @@ button:disabled {
   }
   .corner-suit {
     font-size: clamp(8px, 2.5vw, 14px);
+  }
+}
+
+/* Tablet breakpoint: reduce to 3 columns */
+@media (max-width: 1000px) {
+  .table-items {
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+    gap: 10px;
+  }
+}
+
+/* Desktop: keep 5 columns but allow slightly smaller minimums for dense screens */
+@media (min-width: 1400px) {
+  .table-items {
+    grid-template-columns: repeat(5, minmax(140px, 1fr));
   }
 }
 

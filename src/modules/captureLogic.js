@@ -51,6 +51,13 @@ export class CaptureValidator {
                 validCaptureSets.push([build]);
             });
 
+            // --- 2a.5. Capture opponent pile-top if its combination value equals target ---
+            // (e.g., opponent's pile top of rank 5 can be captured when capturing value 5)
+            const pileTopMatches = validTableItems.filter(
+                item => item.isPileTop && item.type === 'card' && combinationValue(item.rank) === playedCombinationValue
+            );
+            pileTopMatches.forEach(pt => validCaptureSets.push([pt]));
+
             // --- 2b. Capture Combinations Summing to Combination Value (A=1), including builds ---
             // Items eligible for combinations: individual numeric cards (Ace=1) and *all* Builds (using their value)
             // PAIRS CANNOT BE USED IN VALUE COMBINATIONS
