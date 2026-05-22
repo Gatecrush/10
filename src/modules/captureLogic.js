@@ -44,7 +44,7 @@ export class CaptureValidator {
             const buildValueMatches = validTableItems.filter(
                 item =>
                     item.type === 'build' &&
-                    item.value === playedCombinationValue // Match build value (A=1)
+                    Number(item.value) === playedCombinationValue // Match build value (A=1)
             );
             // Each matching build is an independent capture option
             buildValueMatches.forEach(build => {
@@ -70,7 +70,7 @@ export class CaptureValidator {
             if (combinableItems.length > 0) {
                 const n = combinableItems.length;
                 // Precompute values for speed (cards: combinationValue, builds: build.value)
-                const values = combinableItems.map(item => (item.type === 'card' ? combinationValue(item.rank) : item.value));
+                const values = combinableItems.map(item => (item.type === 'card' ? combinationValue(item.rank) : Number(item.value)));
 
                 // Helper: check whether a mask (subset) can be partitioned into disjoint submasks each summing to target
                 const canPartitionMask = (mask, target) => {
