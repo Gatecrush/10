@@ -486,6 +486,7 @@ button:disabled {
     width: 100%; /* Take full width on small screens */
     padding: 6px; /* Slight padding */
     max-width: 100%;
+    box-sizing: border-box;
   }
 
   h1 {
@@ -517,8 +518,9 @@ button:disabled {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scroll-snap-type: x mandatory;
-    /* Constrain visible viewport to ~6 cards; extra content forms columns and is scrollable */
-    max-width: calc((var(--card-min) + 6px) * 6 - 6px);
+    /* Constrain visible viewport to ~6 cards but never exceed device width */
+    max-width: min(100%, calc((var(--card-min) + 6px) * 6 - 6px));
+    overflow-y: hidden; /* avoid vertical bounce causing horizontal scroll */
   }
   .table-items {
     min-height: 80px;
@@ -539,7 +541,11 @@ button:disabled {
   }
 
   /* Add left/right padding so the viewport looks nicer when clipped to 6 cards */
-  .table-area { padding-left: 8px; padding-right: 8px; }
+  .table-area { padding-left: 8px; padding-right: 8px; touch-action: pan-x; }
+
+  /* Make hand scrollable on narrow screens and prevent body-level horizontal scrolling */
+  .hand { overflow-x: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x; }
+  html, body { overflow-x: hidden; }
 
 
 /* For centered flex layout, constrain max-width to enforce 3 items per row on tablets */
