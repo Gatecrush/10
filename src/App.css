@@ -99,12 +99,12 @@ h1 {
 /* Captured pile small card override */
 .captured-pile .pile-stack { display: block; }
 .captured-pile .pile-card {
-  width: 68px;
-  height: 104px;
+  width: 60px;
+  height: 84px;
   padding: 2px;
   margin: 0;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .captured-pile .pile-card .rank { font-size: 1em; top: 4px; left: 4px; }
@@ -498,16 +498,16 @@ button:disabled {
   }
 
   .card {
-    max-width: 80px;
-    font-size: 12px;
-    padding: 4px;
+    max-width: 64px;
+    font-size: 11px;
+    padding: 3px;
   }
 
   .build, .pair {
-    width: 65px;
-    height: 95px;
+    width: 58px;
+    height: 82px;
     margin: 2px;
-    padding: 2px;
+    padding: 3px;
   }
 
   .table-area {
@@ -529,7 +529,7 @@ button:disabled {
   .table-items {
     min-height: 80px;
     margin-bottom: 5px;
-    --card-min: 72px; /* smaller base for phones */
+  --card-min: 64px; /* smaller base for phones */
     /* Let the inner items form a wide block that wraps into rows of up to 6.
        The outer .table-area constrains the visible viewport to 6 cards and allows horizontal scrolling. */
     display: flex;
@@ -616,6 +616,9 @@ button:disabled {
     min-height: 100px;
     margin-bottom: 3px;
   }
+
+  /* Hand-specific card sizing on mobile */
+  .hand .card { width: 64px; max-width: 64px; }
 
   /* Adjust corner sizes for mobile */
   .corner-rank {
