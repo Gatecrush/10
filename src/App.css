@@ -9,11 +9,14 @@ body {
   margin: 0;
 }
 
+/* Ensure predictable box-sizing everywhere */
+*, *::before, *::after { box-sizing: border-box; }
+
 .App {
   text-align: center;
   padding: 10px;
   width: 100%;
-  max-width: 900px;
+    max-width: 900px;
 }
 
 h1 {
@@ -518,8 +521,9 @@ button:disabled {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scroll-snap-type: x mandatory;
-    /* Constrain visible viewport to ~6 cards but never exceed device width */
-    max-width: min(100%, calc((var(--card-min) + 6px) * 6 - 6px));
+   /* Constrain visible viewport to ~6 cards but never exceed device width.
+     Use safe-area-inset to account for iOS notch and device padding. */
+   max-width: min(100%, calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 16px));
     overflow-y: hidden; /* avoid vertical bounce causing horizontal scroll */
   }
   .table-items {
