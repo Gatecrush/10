@@ -140,7 +140,7 @@ export class CaptureValidator {
                     }
                 }
             }
-                // --- 2c. Capture a Build plus table cards that sum to the Build value ---
+                // -- 2c. Capture a Build plus table cards that sum to the Build value ---
                 // For example: played combination 9 can capture an existing Build(9) plus table cards [7,2].
                 const cardOnlyItems = validTableItems.filter(item => item.type === 'card');
                 const buildsMatching = validTableItems.filter(item => item.type === 'build' && Number(item.value) === playedCombinationValue);
