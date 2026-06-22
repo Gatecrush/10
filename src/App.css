@@ -14,9 +14,10 @@ body {
 
 .App {
   text-align: center;
-  padding: 10px;
+  padding: 8px;
   width: 100%;
-    max-width: 900px;
+  /* allow the app to scale within viewport while capping max width */
+  max-width: min(1100px, 95vw);
 }
 
 h1 {
@@ -40,21 +41,20 @@ h1 {
   display: flex;
   justify-content: center; /* center the row */
   align-items: center; /* vertically center cards within the hand row */
-  gap: 12px; /* consistent horizontal spacing between cards */
+  gap: 10px; /* consistent horizontal spacing between cards */
   flex-wrap: nowrap; /* keep cards on a single row */
-  /* overflow-x: auto;  allow horizontal scroll if viewport is narrow */
-  /* -webkit-overflow-scrolling: touch; */
-  margin-bottom: 8px;
-  padding: 8px 0;
-  min-height: 130px; /* Ensure space even when hand is empty */
+  margin-bottom: 6px;
+  padding: 6px 0;
+  min-height: 110px; /* Slightly smaller to save vertical space */
 }
 
 /* Hand-scoped card sizing: keep fixed width for horizontal alignment and prevent flex shrinking */
 .hand .card {
   margin: 0;
   flex: 0 0 auto; /* don't grow or shrink */
-  width: 120px; /* fixed visual width inside the hand */
-  max-width: 120px;
+  /* Responsive card sizing: scale between 80px and 140px depending on viewport */
+  width: clamp(80px, 11vw, 120px);
+  max-width: clamp(80px, 11vw, 120px);
 }
 
 .card {
@@ -296,12 +296,12 @@ h1 {
 
 .table-area {
   background-color: #4CAF50; /* Green table */
-  padding: 15px; /* Increased padding */
+  padding: 12px; /* Slightly reduced padding */
   border-radius: 8px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
   width: 100%;
-  margin-bottom: 10px;
-  min-height: 160px; /* Ensure table area has some height */
+  margin-bottom: 8px;
+  min-height: 120px; /* Reduced height to fit better on-screen */
 }
 
 .table-header {
@@ -312,7 +312,8 @@ h1 {
 }
 
 .table-items { /* Centered, wrapping row layout that cascades from center */
-  --card-min: 120px; /* base minimum card width used to calculate max rows */
+  /* base minimum card width used to calculate max rows; responsive */
+  --card-min: clamp(80px, 11vw, 120px);
   display: flex;
   flex-wrap: wrap;
   justify-content: center; /* center each row */

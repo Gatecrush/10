@@ -41,8 +41,18 @@ const RulesModule = {
   // 6. Never break up or combine builds
   cannotBreakOrCombineBuilds({ table, action }) {
     // action: attempted build/modify
-    // Default: disallow
-    return true;
+    // Allow combining only when all selected builds belong to the same player
+    // and none are compound builds. Otherwise disallow by default.
+    if (!action || action.type !== 'combine' || !Array.isArray(action.items)) return true;
+    const builds = action.items.filter(i => i && i.type === 'build');
+    if (builds.length <= 1) return false; // nothing to combine
+    // If any build is compound (multi-build), disallow combining
+    if (builds.some(b => b.isCompound)) return true;
+    // If builds have different controllers, disallow
+    const controllers = new Set(builds.map(b => b.controller));
+    if (controllers.size > 1) return true;
+    // Otherwise allow combining
+    return false;
   },
 
   // 7. No two builds of same capture value

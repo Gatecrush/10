@@ -51,15 +51,15 @@ export const handleBuild = (playedCard, selectedItems, currentPlayer, tableItems
         });
 
         if (isMultiBuildCreation) {
-        newBuildObject = {
-            type: 'build',
-            id: `multibuild-${Date.now()}`,
-            builds: multiBuildBuilds,
-            value: buildValue,
-            controller: currentPlayer,
-            isCompound: true,
-            isCall: false
-        };
+            newBuildObject = {
+                type: 'build',
+                id: generateBuildId(),
+                builds: multiBuildBuilds,
+                value: buildValue,
+                controller: currentPlayer,
+                isCompound: true,
+                isCall: false
+            };
         // Ensure selectedItems have IDs before filtering
         const selectedIds = selectedItems.filter(item => item && item.id).map(item => item.id);
         newTableItems = newTableItems.filter(

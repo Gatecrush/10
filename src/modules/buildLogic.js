@@ -1,5 +1,4 @@
 // src/modules/buildLogic.js
-import { getValue } from './deck';
 import RulesModule from './RulesModule';
 
     // Helper to get the build value of a card (Ace=1)
@@ -10,7 +9,7 @@ import RulesModule from './RulesModule';
       const numRank = parseInt(card.rank);
       return isNaN(numRank) ? 0 : numRank;
     };
-
+  
 
     // Helper to get the value of a table item for building/matching
     const getItemValue = (item) => {
@@ -103,9 +102,8 @@ import RulesModule from './RulesModule';
         }
       }
       // 4. No two builds of same capture value
-      if (RulesModule.cannotHaveDuplicateBuildValues({ table: tableItems })) {
-        return { isValid: false, message: "Cannot have two builds of the same value on the table." };
-      }
+      // NOTE: enforce duplicate-build checks later when evaluating a specific target value
+      // so that modifications which resolve duplicates aren't improperly blocked here.
       // --- Initial Checks ---
       if (!playedCard || !selectedItems || selectedItems.length === 0) {
         return { isValid: false, message: "Select a card from hand and items from table." };
