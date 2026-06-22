@@ -95,6 +95,25 @@ function App() {
     }
   };
 
+  const isSelectedCaptureValid = () => {
+    if (!selectedCard || !selectedTableItems || selectedTableItems.length === 0) return false;
+    try {
+      const augmented = [...(tableItems || []), ...asSelectableItems(player1Pile, player2Pile, currentPlayer)];
+      const options = CaptureValidator.getValidCaptures(selectedCard, augmented);
+      if (!Array.isArray(options) || options.length === 0) return false;
+      const selIds = selectedTableItems.map(i => i.id).filter(Boolean).sort();
+      return options.some(opt => {
+        const optIds = opt.map(i => i.id).filter(Boolean).sort();
+        if (optIds.length !== selIds.length) return false;
+        for (let k = 0; k < optIds.length; k++) if (optIds[k] !== selIds[k]) return false;
+        return true;
+      });
+    } catch (e) {
+      console.error('isSelectedCaptureValid error', e);
+      return false;
+    }
+  };
+
   const canPair = (card, currentTableItems, playerHand) => {
     // validatePair signature: (playedCard, selectedItems, playerHand)
     try {
@@ -671,7 +690,7 @@ function App() {
 
   // --- Disable States for Buttons ---
   const disableTrail = !selectedCard || hasPlayedCard || selectedTableItems.length > 0 || playerControlsBuild || playerControlsPair || isLastCapturingCardForControlledBuild(selectedCard, currentPlayer === 1 ? player1Hand : player2Hand, tableItems, currentPlayer);
-  const disableCapture = !selectedCard || selectedTableItems.length === 0 || hasPlayedCard || (isLastCapturingCardForControlledBuild(selectedCard, currentPlayer === 1 ? player1Hand : player2Hand, tableItems, currentPlayer) && !mustCaptureControlledBuild());
+  const disableCapture = !selectedCard || selectedTableItems.length === 0 || hasPlayedCard || (isLastCapturingCardForControlledBuild(selectedCard, currentPlayer === 1 ? player1Hand : player2Hand, tableItems, currentPlayer) && !mustCaptureControlledBuild()) || !isSelectedCaptureValid();
   const disableBuild = !selectedCard || selectedTableItems.length === 0 || hasPlayedCard || isLastCapturingCardForControlledBuild(selectedCard, currentPlayer === 1 ? player1Hand : player2Hand, tableItems, currentPlayer);
   const disablePair = !selectedCard || selectedTableItems.length === 0 || hasPlayedCard || !canPair(selectedCard, selectedTableItems, currentPlayer === 1 ? player1Hand : player2Hand);
 
