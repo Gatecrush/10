@@ -101,11 +101,27 @@ function App() {
       const augmented = [...(tableItems || []), ...asSelectableItems(player1Pile, player2Pile, currentPlayer)];
       const options = CaptureValidator.getValidCaptures(selectedCard, augmented);
       if (!Array.isArray(options) || options.length === 0) return false;
-      const selIds = selectedTableItems.map(i => i.id).filter(Boolean).sort();
+      // Normalize items to signatures to compare logical equality rather than raw IDs
+      const sigOf = (item) => {
+        if (!item) return null;
+        if (item.type === 'card') return `card:${item.suitRank || (item.suit && item.rank ? item.suit + item.rank : item.id)}`;
+        if (item.type === 'build') {
+          // Prefer explicit cards list when available, otherwise use value+id
+          if (Array.isArray(item.cards)) {
+            const cardSrs = item.cards.map(c => c.suitRank || (c.suit ? c.suit + c.rank : '')).sort().join('|');
+            return `build:${item.value}:${cardSrs}`;
+          }
+          return `build:${item.value}:${item.id}`;
+        }
+        if (item.type === 'pair') return `pair:${item.rank}:${item.id}`;
+        return `item:${item.id || JSON.stringify(item)}`;
+      };
+
+      const selSigs = selectedTableItems.map(sigOf).filter(Boolean).sort();
       return options.some(opt => {
-        const optIds = opt.map(i => i.id).filter(Boolean).sort();
-        if (optIds.length !== selIds.length) return false;
-        for (let k = 0; k < optIds.length; k++) if (optIds[k] !== selIds[k]) return false;
+        const optSigs = opt.map(sigOf).filter(Boolean).sort();
+        if (optSigs.length !== selSigs.length) return false;
+        for (let k = 0; k < optSigs.length; k++) if (optSigs[k] !== selSigs[k]) return false;
         return true;
       });
     } catch (e) {
