@@ -328,7 +328,38 @@ export const handleCapture = (playedCard, selectedItems, currentPlayer,
     // Use the updated validation logic
     const isSelectionValid = isValidMultiCaptureSelection(playedCard, selectedItems, augmentedTable);
 
-    if (!isSelectionValid) {
+    // Special-case allowance:
+    // Allow capturing a build (including one you control) together with opponent pile-top cards
+    // when the played card's combination value equals the build value and each selected pile-top
+    // card also has the same combination value. This handles selecting a build + opponent's
+    // captured-top cards that are equal to the build value.
+    let effectiveIsSelectionValid = isSelectionValid;
+    if (!effectiveIsSelectionValid) {
+        try {
+            const playedCombValue = combinationValue(playedCard.rank);
+            // Find a single selected build whose value matches the played combination value
+            const selectedBuilds = selectedItems.filter(i => i && i.type === 'build');
+            const selectedPileTops = selectedItems.filter(i => i && i.isPileTop);
+            if (selectedBuilds.length === 1 && selectedPileTops.length > 0) {
+                const build = selectedBuilds[0];
+                if (Number(build.value) === playedCombValue) {
+                    // Ensure every selected pile-top card has combinationValue equal to build value
+                    const allPileTopsMatch = selectedPileTops.every(pt => combinationValue(pt.rank) === playedCombValue);
+                    if (allPileTopsMatch) {
+                        // Also ensure the build actually exists on the table (not a virtual item)
+                        const buildOnTable = tableItems.find(t => t && t.id === build.id);
+                        if (buildOnTable) {
+                            effectiveIsSelectionValid = true;
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Fallback capture check failed', e);
+        }
+    }
+
+    if (!effectiveIsSelectionValid) {
         return {
             success: false,
             newP1Score: player1Score,
