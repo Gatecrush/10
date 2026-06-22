@@ -337,11 +337,22 @@ import RulesModule from './RulesModule';
         }
 
         // Check holding card for the final build value
-        const hasHoldingCard = playerHand.some(
-          handCard =>
-            handCard.suitRank !== playedCard.suitRank &&
-            getBuildValue(handCard) === currentBuildValue
-        );
+        // Holding-card rule:
+        // - If modifying an existing single Build by playing a card that equals the build's value
+        //   (i.e., no summing table cards selected and playedCardValue === targetBuild.value),
+        //   require that the player hold another card equal to the ORIGINAL build value so they
+        //   don't abandon control.
+        // - Otherwise, require a holding card equal to the resulting build value as before.
+        let hasHoldingCard = false;
+        if (isModification && targetBuild && currentSummingGroup.length === 0 && playedCardValue === getItemValue(targetBuild)) {
+          hasHoldingCard = playerHand.some(
+            handCard => handCard.suitRank !== playedCard.suitRank && getBuildValue(handCard) === getItemValue(targetBuild)
+          );
+        } else {
+          hasHoldingCard = playerHand.some(
+            handCard => handCard.suitRank !== playedCard.suitRank && getBuildValue(handCard) === currentBuildValue
+          );
+        }
         if (!hasHoldingCard) {
           continue; // Need a holding card for this value
         }

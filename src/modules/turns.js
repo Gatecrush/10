@@ -328,34 +328,75 @@ export const handleCapture = (playedCard, selectedItems, currentPlayer,
     // Use the updated validation logic
     const isSelectionValid = isValidMultiCaptureSelection(playedCard, selectedItems, augmentedTable);
 
-    // Special-case allowance:
-    // Allow capturing a build (including one you control) together with opponent pile-top cards
-    // when the played card's combination value equals the build value and each selected pile-top
-    // card also has the same combination value. This handles selecting a build + opponent's
-    // captured-top cards that are equal to the build value.
+    // Allow a couple of safe fallbacks before rejecting:
     let effectiveIsSelectionValid = isSelectionValid;
+
+    // Fallback A: Build + opponent pile-top(s) matching build value
     if (!effectiveIsSelectionValid) {
         try {
             const playedCombValue = combinationValue(playedCard.rank);
-            // Find a single selected build whose value matches the played combination value
             const selectedBuilds = selectedItems.filter(i => i && i.type === 'build');
             const selectedPileTops = selectedItems.filter(i => i && i.isPileTop);
             if (selectedBuilds.length === 1 && selectedPileTops.length > 0) {
                 const build = selectedBuilds[0];
                 if (Number(build.value) === playedCombValue) {
-                    // Ensure every selected pile-top card has combinationValue equal to build value
                     const allPileTopsMatch = selectedPileTops.every(pt => combinationValue(pt.rank) === playedCombValue);
                     if (allPileTopsMatch) {
-                        // Also ensure the build actually exists on the table (not a virtual item)
                         const buildOnTable = tableItems.find(t => t && t.id === build.id);
-                        if (buildOnTable) {
-                            effectiveIsSelectionValid = true;
-                        }
+                        if (buildOnTable) effectiveIsSelectionValid = true;
                     }
                 }
             }
         } catch (e) {
-            console.error('Fallback capture check failed', e);
+            console.error('Fallback A (pile-top) failed', e);
+        }
+    }
+
+    // Fallback B: Build + other table cards that partition into groups summing to build value
+    if (!effectiveIsSelectionValid) {
+        try {
+            const selectedBuilds = selectedItems.filter(i => i && i.type === 'build');
+            const selectedCardsOnly = selectedItems.filter(i => i && i.type === 'card' && !i.isPileTop);
+            if (selectedBuilds.length === 1 && selectedCardsOnly.length > 0) {
+                const buildVal = Number(selectedBuilds[0].value);
+                // compute values using combinationValue (Ace=1)
+                const vals = selectedCardsOnly.map(c => combinationValue(c.rank));
+                const n = vals.length;
+                const totalMask = (1 << n) - 1;
+                // precompute subset sums
+                const subsetSums = new Map();
+                for (let mask = 1; mask <= totalMask; mask++) {
+                    let s = 0;
+                    for (let j = 0; j < n; j++) if ((mask >> j) & 1) s += vals[j];
+                    subsetSums.set(mask, s);
+                }
+                const goodSubs = [];
+                for (const [mask, s] of subsetSums) if (s === buildVal) goodSubs.push(mask);
+                if (goodSubs.length > 0) {
+                    const memo = new Map();
+                    const cover = (remaining) => {
+                        if (remaining === 0) return true;
+                        if (memo.has(remaining)) return memo.get(remaining);
+                        for (const s of goodSubs) {
+                            if ((s & remaining) === s) {
+                                if (cover(remaining ^ s)) {
+                                    memo.set(remaining, true);
+                                    return true;
+                                }
+                            }
+                        }
+                        memo.set(remaining, false);
+                        return false;
+                    };
+                    if (cover(totalMask)) {
+                        // ensure build exists on table
+                        const buildOnTable = tableItems.find(t => t && t.id === selectedBuilds[0].id);
+                        if (buildOnTable) effectiveIsSelectionValid = true;
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Fallback B (partition) failed', e);
         }
     }
 
