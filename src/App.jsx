@@ -775,22 +775,4 @@ function App() {
     </div>
   );
 }
-
-  const isLastCapturingCardForControlledBuild = (cardToCheck, hand, currentTableItems, playerNum) => {
-    if (!cardToCheck) return false;
-    const controlledBuilds = currentTableItems.filter(item => item.type === 'build' && item.controller === playerNum);
-    if (controlledBuilds.length === 0) return false;
-
-    const buildValue = (rank) => rank === 'A' ? 1 : getValue(rank); // Ace=1 for builds
-
-    return controlledBuilds.some(build => {
-        // Is the selected card the one needed to capture this build?
-        const isSelectedCardMatcher = buildValue(cardToCheck.rank) === build.value;
-        if (!isSelectedCardMatcher) return false;
-
-        // Count how many cards in hand match the build value
-        const matchingCardCount = hand.filter(c => buildValue(c.rank) === build.value).length;
-        return matchingCardCount === 1; // If only one matches, it's the last one
-    });
-  };
 export default App;
