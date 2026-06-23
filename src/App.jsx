@@ -28,10 +28,38 @@ function App() {
   const [hasPlayedCard, setHasPlayedCard] = useState(false);
   const [round, setRound] = useState(1);
   const [isRoundOver, setIsRoundOver] = useState(false);
+  const [mobileToolbarVisible, setMobileToolbarVisible] = useState(true);
 
   useEffect(() => {
     resetGame();
   }, []);
+
+  // Auto-hide mobile toolbar on scroll and show on tap
+  useEffect(() => {
+    let scrollTimeout = null;
+    const onScroll = () => {
+      // hide toolbar when user scrolls
+      setMobileToolbarVisible(false);
+      // clear any pending timeout
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      // small debounce to avoid thrashing (not auto-showing)
+      scrollTimeout = setTimeout(() => {
+        // keep hidden until user taps
+      }, 150);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+    };
+  }, []);
+
+  const showMobileToolbar = (e) => {
+    // show toolbar on any tap/click inside the app
+    setMobileToolbarVisible(true);
+  };
 
   const resetGame = () => {
     const newDeck = createDeck();
@@ -722,7 +750,7 @@ function App() {
       )}
 
       {(gamePhase === 'play' || gamePhase === 'ending') && ( // Show board during play and ending phase
-        <div className="game-board">
+          <div className="game-board" onClick={showMobileToolbar}>
           {/* Player 1 Area */}
           <div className={`player-area ${currentPlayer === 1 ? 'current-player' : ''}`}>
             <h2>Player 1</h2>
@@ -798,7 +826,7 @@ function App() {
             </button>
           </div>
           {/* Mobile sticky toolbar: visible only on small screens via CSS */}
-          <div className="mobile-toolbar" role="toolbar" aria-label="Game actions">
+          <div className={`mobile-toolbar ${mobileToolbarVisible ? 'visible' : 'hidden'}`} role="toolbar" aria-label="Game actions">
             <button
               onClick={playTrail}
               disabled={disableTrail}

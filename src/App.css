@@ -311,19 +311,17 @@ h1 {
   font-weight: normal; /* Make it normal weight */
 }
 
-.table-items { /* Centered, wrapping row layout that cascades from center */
-  /* base minimum card width used to calculate max rows; responsive */
+
+.table-items { /* Grid layout: rows of up to 6 cards, centered */
   --card-min: clamp(80px, 11vw, 120px);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center; /* center each row */
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(6, var(--card-min)); /* up to 6 per row */
+  justify-content: center; /* center the grid within container */
+  align-items: start;
   gap: 12px;
   margin: 0 auto 10px auto;
   min-height: 130px;
   width: 100%;
-  /* Constrain the row width so there are at most 6 items per row; center aligns items */
-  max-width: calc((var(--card-min) + 12px) * 6 - 12px);
 }
 
 /* Subtle transition for child items so when the grid reflows it feels smoother */
@@ -339,10 +337,8 @@ h1 {
   align-self: start;
   opacity: 0;
   transform: translateY(6px) scale(0.995);
-  /* Make each table item a fixed-size flex item so rows fill horizontally */
-  flex: 0 0 var(--card-min);
   width: var(--card-min);
-  max-width: var(--card-min);
+  height: auto;
 }
 
 /* Fade-in with slight upward motion; staggered using nth-child patterns */
@@ -437,6 +433,7 @@ h1 {
 
   .table-items {
     --card-min: clamp(64px, 18vw, 96px);
+    grid-template-columns: repeat(4, var(--card-min)); /* 4 per row on small screens */
     gap: 8px;
     min-height: 80px;
     /* reduce items per row on narrow screens */
@@ -491,7 +488,7 @@ h1 {
 /* Very small narrow phones: tighten spacing further */
 @media (max-width: 380px) {
   .hand .card { width: clamp(56px, 20vw, 82px); }
-  .table-items { --card-min: clamp(56px, 20vw, 82px); max-width: calc((var(--card-min) + 6px) * 3 - 6px); }
+  .table-items { --card-min: clamp(56px, 20vw, 82px); grid-template-columns: repeat(3, var(--card-min)); max-width: calc((var(--card-min) + 6px) * 3 - 6px); }
   .card { padding: 5px; border-radius: 8px; }
 }
 
@@ -516,6 +513,9 @@ h1 {
     z-index: 1200;
   }
 
+  .mobile-toolbar.hidden { transform: translateY(120%); opacity: 0; transition: transform 280ms ease, opacity 280ms ease; }
+  .mobile-toolbar.visible { transform: translateY(0); opacity: 1; transition: transform 220ms ease, opacity 220ms ease; }
+
   .mobile-toolbar .mobile-action {
     flex: 1 1 0;
     margin: 0 4px;
@@ -538,6 +538,16 @@ h1 {
   .mobile-toolbar .mobile-action:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+  }
+
+  /* Hide desktop action row on small screens to avoid duplicate controls */
+  .actions {
+    display: none !important;
+  }
+
+  /* Ensure app content has bottom padding so the sticky toolbar doesn't cover UI */
+  .App {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 8px));
   }
 }
 
