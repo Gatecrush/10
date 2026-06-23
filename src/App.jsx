@@ -697,8 +697,11 @@ function App() {
     );
 
     // Check if the selected table items *only* contain one of these required builds
-    if (selectedTableItems.length === 1 && selectedTableItems[0].type === 'build') {
-        return matchingControlledBuilds.some(build => build.id === selectedTableItems[0].id);
+    // Allow the user to select the required controlled build along with other items
+    // (e.g., Build + other table cards that sum to the build) — accept if any
+    // of the selectedItems include the required controlled build.
+    if (selectedTableItems.some(i => i && i.type === 'build')) {
+      return selectedTableItems.some(i => i && i.type === 'build' && matchingControlledBuilds.some(build => build.id === i.id));
     }
 
     return false; // If multiple items selected, or wrong item selected, it's not a forced capture (yet)
