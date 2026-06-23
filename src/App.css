@@ -400,6 +400,147 @@ h1 {
   right: 9%;
 }
 
+/* Responsive tweaks for small screens (mobile) */
+@media (max-width: 600px) {
+  .App {
+    padding: 6px;
+    max-width: 100vw;
+  }
+
+  .game-board {
+    padding-bottom: 8px;
+  }
+
+  .hand {
+    flex-wrap: wrap; /* allow cards to wrap to new lines */
+    gap: 8px;
+    justify-content: center;
+    min-height: 86px;
+    padding: 4px 0;
+  }
+
+  .hand .card {
+    width: clamp(64px, 18vw, 96px);
+    max-width: clamp(64px, 18vw, 96px);
+  }
+
+  .card {
+    font-size: 14px;
+    border-radius: 10px;
+    padding: 6px;
+  }
+
+  .table-area {
+    padding: 8px;
+    min-height: 100px;
+  }
+
+  .table-items {
+    --card-min: clamp(64px, 18vw, 96px);
+    gap: 8px;
+    min-height: 80px;
+    /* reduce items per row on narrow screens */
+    max-width: calc((var(--card-min) + 8px) * 4 - 8px);
+  }
+
+  .table-items > * {
+    flex: 0 0 var(--card-min);
+    width: var(--card-min);
+    max-width: var(--card-min);
+  }
+
+  /* Reduce hover motion on touch devices */
+  .table-items > *:hover,
+  .card:hover,
+  .build:hover,
+  .pair:hover {
+    transform: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  }
+
+  .captured-pile {
+    border-left: none;
+    border-top: 2px dotted rgba(255,255,255,0.12);
+    padding-left: 0;
+    padding-top: 8px;
+    margin-left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .captured-pile .pile-card {
+    width: 48px;
+    height: 68px;
+    font-size: 11px;
+  }
+
+  .captured-pile .pile-badge {
+    top: -6px;
+    left: 6px;
+    padding: 2px 5px;
+    font-size: 0.7em;
+  }
+
+  /* Slightly shorten animations for responsiveness */
+  .table-items > *:not(.no-animate) {
+    animation-duration: 200ms;
+  }
+}
+
+/* Very small narrow phones: tighten spacing further */
+@media (max-width: 380px) {
+  .hand .card { width: clamp(56px, 20vw, 82px); }
+  .table-items { --card-min: clamp(56px, 20vw, 82px); max-width: calc((var(--card-min) + 6px) * 3 - 6px); }
+  .card { padding: 5px; border-radius: 8px; }
+}
+
+/* Mobile sticky toolbar styles */
+.mobile-toolbar {
+  display: none; /* hidden by default, enabled in small screens */
+}
+
+@media (max-width: 600px) {
+  .mobile-toolbar {
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    gap: 6px;
+    padding: env(safe-area-inset-bottom, 8px) 8px 8px 8px;
+    background: linear-gradient(180deg, rgba(40,44,52,0.0), rgba(40,44,52,0.98));
+    box-shadow: 0 -6px 18px rgba(0,0,0,0.35);
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1200;
+  }
+
+  .mobile-toolbar .mobile-action {
+    flex: 1 1 0;
+    margin: 0 4px;
+    padding: 10px 8px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    min-height: 44px; /* touch-friendly height */
+  }
+
+  .mobile-toolbar .mobile-action.primary {
+    background: linear-gradient(180deg, #2ecc71, #27ae60);
+    border: none;
+    color: #062b10;
+    font-weight: 700;
+  }
+
+  .mobile-toolbar .mobile-action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
 /* Reduce the per-card box shadow for table cards to match the hand visual */
 .table-card {
   box-shadow: 1px 1px 4px rgba(0,0,0,0.25);

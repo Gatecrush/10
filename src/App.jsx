@@ -797,6 +797,41 @@ function App() {
                 Pair
             </button>
           </div>
+          {/* Mobile sticky toolbar: visible only on small screens via CSS */}
+          <div className="mobile-toolbar" role="toolbar" aria-label="Game actions">
+            <button
+              onClick={playTrail}
+              disabled={disableTrail}
+              className="mobile-action"
+              title="Trail"
+            >
+              Trail
+            </button>
+            <button
+              onClick={playCapture}
+              disabled={disableCapture}
+              className="mobile-action primary"
+              title="Capture"
+            >
+              Capture
+            </button>
+            <button
+              onClick={playBuild}
+              disabled={disableBuild}
+              className="mobile-action"
+              title="Build"
+            >
+              Build
+            </button>
+            <button
+              onClick={playPair}
+              disabled={disablePair}
+              className="mobile-action"
+              title="Pair"
+            >
+              Pair
+            </button>
+          </div>
         </div>
       )}
 
