@@ -326,7 +326,15 @@ import RulesModule from './RulesModule';
         }
 
         // Calculate the value of this potential build
-        const currentBuildValue = playedCardValue + summingGroupValue + (targetBuild ? getItemValue(targetBuild) : 0);
+        // Special-case: when modifying an existing single build and no summing cards
+        // are selected, and the played card's build value equals the target build value,
+        // treat the resulting build value as the existing build value (i.e., continue the build)
+        let currentBuildValue;
+        if (isModification && targetBuild && currentSummingGroup.length === 0 && playedCardValue === getItemValue(targetBuild)) {
+          currentBuildValue = getItemValue(targetBuild);
+        } else {
+          currentBuildValue = playedCardValue + summingGroupValue + (targetBuild ? getItemValue(targetBuild) : 0);
+        }
         if (currentBuildValue <= 0 || currentBuildValue > 10) continue; // Build value must be 1-10
 
         const currentRemainingItems = otherSelectedItems.filter(item => currentRemainingIds.has(item.id));
