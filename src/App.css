@@ -851,6 +851,54 @@ button:disabled {
 }
 
 /* SUIT COLORS - Apply color to corner rank and suit based on suit class */
+.mobile-6col-override {
+  /* helper container class if needed */
+}
+
+/* Mobile override: force 6 equal columns and make builds/pairs match card shape */
+@media (max-width: 600px) {
+  .table-area { overflow-x: hidden !important; }
+  .table-items {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-items: center !important;
+  }
+
+  .table-items > * {
+    width: 100% !important;
+    aspect-ratio: 5 / 7 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    margin: 0 !important;
+    padding: 6px !important;
+    background-clip: padding-box !important;
+  }
+
+  .table-items .build,
+  .table-items .pair {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    padding: 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background-color: #fff !important;
+    color: #333 !important;
+  }
+
+  .table-items .build.simple-build { border: 2px dashed rgba(0,0,0,0.12) !important; }
+  .table-items .build.compound-build { border: 3px double rgba(0,0,0,0.12) !important; }
+
+  .table-items .build .build-value,
+  .table-items .pair .pair-rank { font-size: 0.95em !important; margin-bottom: 4px !important; }
+  .table-items .build .build-cards,
+  .table-items .pair .pair-cards { font-size: 0.75em !important; color: #444 !important; }
+}
+
 .card.hearts .corner-rank,
 .card.hearts .corner-suit,
 .card.diamonds .corner-rank,
