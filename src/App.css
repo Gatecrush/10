@@ -857,6 +857,23 @@ button:disabled {
 
 /* Mobile override: force 6 equal columns and make builds/pairs match card shape */
 @media (max-width: 600px) {
+  /* unified mobile card size for hand and table */
+  :root, .App { --mobile-card-size: clamp(56px, 16vw, 96px); }
+
+  /* Hand cards match table cards */
+  .hand .card {
+    width: var(--mobile-card-size) !important;
+    max-width: var(--mobile-card-size) !important;
+    aspect-ratio: 5 / 7 !important;
+  }
+
+  /* Table items (cards, builds, pairs) use the same size */
+  .table-items > * {
+    width: var(--mobile-card-size) !important;
+    max-width: var(--mobile-card-size) !important;
+    aspect-ratio: 5 / 7 !important;
+  }
+
   .table-area { overflow-x: hidden !important; }
   .table-items {
     display: grid !important;
