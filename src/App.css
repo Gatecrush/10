@@ -558,13 +558,19 @@ h1 {
 
 /* Selected card styling */
 .card.hand-card.selected {
-  border: 3px solid blue;
-  transform: translateY(-4px) scale(1.05);
+  /* Use outline instead of border to avoid layout reflow on selection */
+  outline: 3px solid rgba(30,144,255,0.95); /* dodgerblue-ish */
+  outline-offset: 2px;
+  box-shadow: 0 8px 18px rgba(30,144,255,0.08);
+  transform: translateY(-3px) scale(1.03);
 }
 
 .card.selected-table-card, .build.selected-table-card, .pair.selected-table-card {
-  border: 3px solid darkorange;
-  transform: translateY(-4px) scale(1.05);
+  /* Use outline for table selections to avoid changing element box size */
+  outline: 3px solid rgba(255,140,0,0.95); /* darkorange-ish */
+  outline-offset: 2px;
+  box-shadow: 0 8px 18px rgba(255,140,0,0.08);
+  transform: translateY(-3px) scale(1.03);
 }
 
 button {
