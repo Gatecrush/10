@@ -949,3 +949,44 @@ button:disabled {
 .card.clubs .corner-suit {
   color: #212121; /* Standard casino black */
 }
+
+/* Final mobile override: ensure hand cards and table items are identical, touch-friendly sizes
+   Placed at end to override earlier conflicting mobile rules. */
+@media (max-width: 700px) {
+  :root, .App { --mobile-card-size: clamp(64px, 16vw, 88px); }
+
+  /* Force consistent sizing for hand and table items */
+  .hand .card,
+  .table-items > *,
+  .table-items .build,
+  .table-items .pair {
+    width: var(--mobile-card-size) !important;
+    max-width: var(--mobile-card-size) !important;
+    flex: 0 0 var(--mobile-card-size) !important;
+    aspect-ratio: 5 / 7 !important;
+    box-sizing: border-box !important;
+    padding: 6px !important;
+    margin: 0 !important;
+  }
+
+  /* Use a simple flex-wrap layout so items never shrink below the set width */
+  .table-items {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Prevent grid-based column calculations from making items very small */
+  .table-items[style], .table-items { grid-template-columns: none !important; }
+
+  /* Ensure builds/pairs use same visual face as cards on mobile */
+  .table-items .build,
+  .table-items .pair {
+    background-color: #fff !important;
+    color: #333 !important;
+    border-radius: 10px !important;
+  }
+}
