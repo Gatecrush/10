@@ -323,6 +323,20 @@ export const handleCapture = (playedCard, selectedItems, currentPlayer,
         return { success: false, message: "Internal error: Invalid items selected.", newP1Score: player1Score, newP2Score: player2Score, newTableItems: tableItems, newLastCapturer: lastCapturer, capturedCards: [] };
     }
 
+    // Rule: cannot capture two builds in the same capture action
+    const selectedBuilds = selectedItems.filter(i => i && i.type === 'build');
+    if (selectedBuilds.length > 1) {
+        return {
+            success: false,
+            message: "Invalid capture: cannot capture more than one build at a time.",
+            newP1Score: player1Score,
+            newP2Score: player2Score,
+            newTableItems: tableItems,
+            newLastCapturer: lastCapturer,
+            capturedCards: []
+        };
+    }
+
     // Include pile-top virtual items in validation
     const augmentedTable = [...tableItems, ...asSelectableItems(player1Pile, player2Pile, currentPlayer)];
     // Use the updated validation logic
