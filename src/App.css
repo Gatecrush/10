@@ -857,8 +857,8 @@ button:disabled {
 
 /* Mobile override: force 6 equal columns and make builds/pairs match card shape */
 @media (max-width: 600px) {
-  /* unified mobile card size for hand and table */
-  :root, .App { --mobile-card-size: clamp(56px, 16vw, 96px); }
+  /* unified mobile card size for hand and table - ensure accessible tap minimum */
+  :root, .App { --mobile-card-size: clamp(64px, 16vw, 96px); }
 
   /* Hand cards match table cards */
   .hand .card {
@@ -894,6 +894,20 @@ button:disabled {
     background-clip: padding-box !important;
   }
 
+  /* Improve touch hit targets and reduce accidental hover/animation on touch devices */
+  .card, .build, .pair {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    -ms-touch-action: manipulation;
+    will-change: transform, opacity;
+  }
+
+  /* Better active/tap feedback for small cards */
+  .card:active, .build:active, .pair:active {
+    transform: translateY(-2px) scale(0.99) !important;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.10) !important;
+  }
+
   .table-items .build,
   .table-items .pair {
     border-radius: 12px !important;
@@ -908,7 +922,7 @@ button:disabled {
   }
 
   .table-items .build.simple-build { border: 2px dashed rgba(0,0,0,0.12) !important; }
-  .table-items .build.compound-build { border: 3px double rgba(0,0,0,0.12) !important; }
+  .table-items .build.compound-build { border: 2px double rgba(0,0,0,0.12) !important; }
 
   .table-items .build .build-value,
   .table-items .pair .pair-rank { font-size: 0.95em !important; margin-bottom: 4px !important; }
