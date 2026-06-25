@@ -31,8 +31,16 @@ export class CaptureValidator {
                  (item.type === 'pair' && item.rank === playedRank))
         );
         if (rankMatchItems.length > 0) {
-            // Rank capture takes ALL matching rank items (cards and pairs) together
-            validCaptureSets.push([...rankMatchItems]);
+            // Rank capture can take any non-empty subset of the matching rank items.
+            // This allows valid face-card captures like selecting one matching Queen.
+            const n = rankMatchItems.length;
+            for (let mask = 1; mask < (1 << n); mask++) {
+                const subset = [];
+                for (let j = 0; j < n; j++) {
+                    if ((mask >> j) & 1) subset.push(rankMatchItems[j]);
+                }
+                validCaptureSets.push(subset);
+            }
         }
 
         // --- 2. Capture by Value (Only for Numeric Cards: 2-10, A) ---
