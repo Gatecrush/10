@@ -36,6 +36,12 @@ h1 {
   margin: 10px;
   width: 100%;
 }
+
+.player-area h2 {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    margin: 0.25rem 0 0.35rem;
+  letter-spacing: 0.01em;
+}
  
 .hand {
   display: flex;
@@ -763,6 +769,11 @@ button:disabled {
 
   .actions {
     margin-top: 5px;
+  }
+
+  .player-area h2 {
+    font-size: clamp(0.95rem, 3.8vw, 1.05rem);
+    margin: 0.2rem 0 0.3rem;
   }
 
   .player-info .score {
