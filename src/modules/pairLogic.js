@@ -15,24 +15,28 @@ export const validatePair = (playedCard, selectedItems, playerHand) => {
 
   const targetRank = playedCard.rank;
 
-  // Rule 1: All selected items must be cards.
-  if (selectedItems.some(item => item.type !== 'card')) {
-    return { isValid: false, message: "Can only pair with individual cards on the table." };
+  const selectedPair = selectedItems.length === 1 && selectedItems[0].type === 'pair';
+  const selectedCardsOnly = selectedItems.every(item => item.type === 'card');
+
+  // Rule 1: Pairing can be either:
+  //  - creating/extending a pair with individual cards, or
+  //  - extending an existing pair with one played card.
+  if (!selectedCardsOnly && !selectedPair) {
+    return { isValid: false, message: "Can only pair with individual cards or extend an existing pair." };
   }
 
-  // Rule 2: All selected table cards must have the same rank as the played card.
+  // Rule 2: All selected table items must match the rank of the played card.
   if (selectedItems.some(item => item.rank !== targetRank)) {
-    return { isValid: false, message: `All selected table cards must be rank ${targetRank} to pair.` };
+    return { isValid: false, message: `All selected items must be rank ${targetRank} to pair.` };
   }
 
-  // Rule 3: Player must hold at least one more card of the same rank in hand (after playing this one).
+  // Rule 3: Player must hold at least one more card of the same rank in hand after playing this one,
+  // unless they are extending an existing pair on the table.
   const remainingMatchingCardsInHand = playerHand.filter(card =>
     card.rank === targetRank && card.suitRank !== playedCard.suitRank // Exclude the card being played
   ).length;
 
-  // Allow extending an existing pair on the table even if this is the last matching card in hand.
-  // If player is extending an existing pair (selectedItems contains a single pair of the same rank), allow it.
-  const isExtendingExistingPair = selectedItems.length === 1 && selectedItems[0].type === 'pair' && selectedItems[0].rank === targetRank;
+  const isExtendingExistingPair = selectedPair && selectedItems[0].rank === targetRank;
 
   if (remainingMatchingCardsInHand === 0 && !isExtendingExistingPair) {
     return { isValid: false, message: `You must hold another ${targetRank} in hand to make this pair.` };
